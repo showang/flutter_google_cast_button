@@ -1,6 +1,6 @@
 # flutter_google_cast_button
 
-A Flutter plugin whitch provides the cast button and sync cast state with it.
+A Flutter plugin which provides the cast button and sync cast state with it.
 
 # Use this package as a library
 ### 1. Depend on it
@@ -37,17 +37,19 @@ import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
 
 ## Android
 
-### 0. Support AndroidX. (Add following properties to `gradle.properties`) 
+### 0. Support AndroidX.
+Add following properties to `gradle.properties`. 
 ``` properties
 android.useAndroidX=true
 android.enableJetifier=true
 ```
-### 1. Add google cast dependency in `build.gradle`.
+### 1. Add google cast dependency.
+Add `play-services-cast-framework` dependency into `android/build.gradle`
 ``` groovy
 implementation "com.google.android.gms:play-services-cast-framework:16.2.0"
 ``` 
 
-### 2. Add `CastOptionsProvider` class into project. EX:
+### 2. Create CastOptionsProvider class for configure cast library. EX:
 ``` kotlin
 class DefaultCastOptionsProvider : OptionsProvider {
     override fun getCastOptions(context: Context): CastOptions {
@@ -61,7 +63,9 @@ class DefaultCastOptionsProvider : OptionsProvider {
     }
 }
 ```
-### 3. Add options provider metadata into `AndroidManifest.xml`. EX:
+### 3. Add options provider metadata.
+Add `meta-data` to project's `AndroidManifest.xml`. EX:
+
 ``` xml
 <meta-data
     android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
