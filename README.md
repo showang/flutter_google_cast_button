@@ -1,3 +1,4 @@
+![pub](https://img.shields.io/pub/v/flutter_google_cast_button.svg)
 # flutter_google_cast_button
 
 A Flutter plugin which provides the cast button and sync cast state with it.
@@ -72,11 +73,27 @@ Add `meta-data` to project's `AndroidManifest.xml`. EX:
     android:value="github.showang.flutter_google_cast_button_example.DefaultCastOptionsProvider" />
 ``` 
 
+### 4. Setup/dispose android context.
+Add following code into `MainActivity`. (Avoid context leak)
+
+``` kotlin
+override fun onStart() {
+    super.onStart()
+    FlutterGoogleCastButtonPlugin.instance.initContext(this)
+}
+
+override fun onStop() {
+    FlutterGoogleCastButtonPlugin.instance.disposeContext()
+    releaseMediaController()
+    super.onStop()
+}
+``` 
+
 ## iOS
 
-### 1. Run `pod install` before open Xcode.
+1. Run `pod install` before open Xcode.
 
-### 2. Initializing CastContext when `application didFinishLaunching`. EX:
+2. Initializing CastContext when `application didFinishLaunching`. EX:
 ``` swift
   let kReceiverAppID = kGCKDefaultMediaReceiverApplicationID
   let kDebugLoggingEnabled = true
