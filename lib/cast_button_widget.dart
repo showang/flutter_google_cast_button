@@ -8,8 +8,9 @@ import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
 
 class CastButtonWidget extends StatefulWidget {
   final MediaRouteBloc bloc;
+  final Color tintColor;
 
-  CastButtonWidget({this.bloc});
+  CastButtonWidget({this.bloc, this.tintColor});
 
   @override
   State<StatefulWidget> createState() {
@@ -88,9 +89,9 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
         }
         Widget icon;
         if (newState is Unconnected) {
-          icon = Icon(Icons.cast);
+          icon = Icon(Icons.cast, color: widget.tintColor);
         } else if (newState is Connected) {
-          icon = Icon(Icons.cast_connected);
+          icon = Icon(Icons.cast_connected, color: widget.tintColor);
         } else {
           if (!_animationController.isAnimating) {
             Future.delayed(Duration(milliseconds: 20), () {
@@ -100,6 +101,7 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
           icon = ImageIcon(
             ExactAssetImage(connectingIconTween.value, package: packageName),
             size: 24,
+            color: widget.tintColor,
           );
         }
         currentState = newState;

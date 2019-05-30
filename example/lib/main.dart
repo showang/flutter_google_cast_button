@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 CastButtonWidget(
                   bloc: mediaRouteBloc,
+                  tintColor: Colors.deepPurple,
                 ),
                 RaisedButton(
                   child: Text("Show cast dialog manually"),

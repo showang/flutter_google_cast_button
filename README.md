@@ -1,9 +1,11 @@
 ![pub](https://img.shields.io/pub/v/flutter_google_cast_button.svg)
 # flutter_google_cast_button
 
-A Flutter plugin which provides the cast button and sync cast state with it.
+A Flutter plugin provides a cast button widget and sync cast state with it.
 
 # Use this package as a library
+## Install
+
 ### 1. Depend on it
 Add this to your package's pubspec.yaml file:
 
@@ -27,30 +29,21 @@ $ flutter packages get
 ```
 Alternatively, your editor might support pub get or flutter packages get. Check the docs for your editor to learn more.
 
-### 3. Import it
-Now in your Dart code, you can use:
+## Android Settings
 
-```dart
-import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
-```
-
-# Setting up for each platform
-
-## Android
-
-### 0. Support AndroidX.
+### 0. Support AndroidX
 Add following properties to `gradle.properties`. 
 ``` properties
 android.useAndroidX=true
 android.enableJetifier=true
 ```
-### 1. Add google cast dependency.
+### 1. Add google cast dependency
 Add `play-services-cast-framework` dependency into `android/build.gradle`
 ``` groovy
 implementation "com.google.android.gms:play-services-cast-framework:16.2.0"
 ``` 
 
-### 2. Create CastOptionsProvider class for configure cast library. EX:
+### 2. Create CastOptionsProvider class for configure cast library
 ``` kotlin
 class DefaultCastOptionsProvider : OptionsProvider {
     override fun getCastOptions(context: Context): CastOptions {
@@ -64,8 +57,8 @@ class DefaultCastOptionsProvider : OptionsProvider {
     }
 }
 ```
-### 3. Add options provider metadata.
-Add `meta-data` to project's `AndroidManifest.xml`. EX:
+### 3. Add options provider metadata
+Add `meta-data` to project's `AndroidManifest.xml`
 
 ``` xml
 <meta-data
@@ -73,7 +66,7 @@ Add `meta-data` to project's `AndroidManifest.xml`. EX:
     android:value="github.showang.flutter_google_cast_button_example.DefaultCastOptionsProvider" />
 ``` 
 
-### 4. Setup/dispose android context.
+### 4. Setup/Release android context
 Add following code into `MainActivity`. (Avoid context leak)
 
 ``` kotlin
@@ -89,9 +82,10 @@ override fun onStop() {
 }
 ``` 
 
-## iOS
+## iOS settings
 
-1. Run `pod install` before open Xcode.
+1. Get packages
+Run `pod install` before open Xcode.
 
 2. Initializing CastContext when `application didFinishLaunching`. EX:
 ``` swift
@@ -113,4 +107,56 @@ override fun onStop() {
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
+```
+
+## Usage in Dart
+
+### 1. Import it
+Package paths relative with button widget.
+```dart
+import 'package:flutter_google_cast_button/bloc_media_route.dart';
+import 'package:flutter_google_cast_button/cast_button_widget.dart';
+```
+
+### 2. Init MediaRouteBloc
+Initialize/Dispose bloc when scope of widget's life cycle for saving/release state.
+
+``` dart
+MediaRouteBloc _mediaRouteBloc;
+
+@override
+void initState() {
+  super.initState();
+  mediaRouteBloc = MediaRouteBloc();
+}
+
+@override
+void dispose() {
+  mediaRouteBloc.dispose();
+  super.dispose();
+}
+
+```
+
+### 3. Provide MediaRouteBloc
+Using bloc provider or any injection frameworks what you prefer.
+
+#### BlocProvider Example
+Provide a bloc.
+``` dart
+var widgetTree = new BlocProvider(
+  bloc: _mediaRouteBloc,
+  child: WidgetDependentWithBloc(),
+);
+```
+
+### 4. Use the CastButtonWidget
+If you are using BlocProvider.
+
+``` dart
+var _castButtonWidget = new CastButtonWidget();
+```
+else, inject the bloc for widget.
+``` dart
+var _castButtonWidget = new CastButtonWidget(bloc: _mediaRouteBloc);  
 ```
