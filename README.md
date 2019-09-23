@@ -66,19 +66,13 @@ Add `meta-data` to project's `AndroidManifest.xml`
     android:value="github.showang.flutter_google_cast_button_example.DefaultCastOptionsProvider" />
 ``` 
 
-### 4. Setup/Release android context
-Add following code into `MainActivity`. (Avoid context leak)
+### 4. Updating in live cycle
+Add following code into `MainActivity` for update new state when resume.
 
 ``` kotlin
-override fun onStart() {
-    super.onStart()
-    FlutterGoogleCastButtonPlugin.instance.initContext(this)
-}
-
-override fun onStop() {
-    FlutterGoogleCastButtonPlugin.instance.disposeContext()
-    releaseMediaController()
-    super.onStop()
+override fun onResume() {
+    super.onResume()
+    FlutterGoogleCastButtonPlugin.instance?.onResume()
 }
 ``` 
 
