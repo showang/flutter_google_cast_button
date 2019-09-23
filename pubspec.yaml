@@ -1,6 +1,6 @@
 name: flutter_google_cast_button
 description: A Flutter plugin provides cast button which sync cast state with it.
-version: 0.1.2
+version: 0.2.0
 author: showang <showang730@gmail.com>
 homepage: https://github.com/showang/flutter_google_cast_button
 

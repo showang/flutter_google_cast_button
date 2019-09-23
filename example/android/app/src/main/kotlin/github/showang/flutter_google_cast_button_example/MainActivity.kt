@@ -6,19 +6,16 @@ import github.showang.flutter_google_cast_button.FlutterGoogleCastButtonPlugin
 import io.flutter.app.FlutterActivity
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-class MainActivity: FlutterActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    GeneratedPluginRegistrant.registerWith(this)
-  }
+class MainActivity : FlutterActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        GeneratedPluginRegistrant.registerWith(this)
+    }
 
-  override fun onStart() {
-    super.onStart()
-    FlutterGoogleCastButtonPlugin.instance.initContext(this)
-  }
+    override fun onResume() {
+        super.onResume()
+        //Update newest state when resume
+        FlutterGoogleCastButtonPlugin.instance?.onResume()
+    }
 
-  override fun onStop() {
-    FlutterGoogleCastButtonPlugin.instance.disposeContext()
-    super.onStop()
-  }
 }

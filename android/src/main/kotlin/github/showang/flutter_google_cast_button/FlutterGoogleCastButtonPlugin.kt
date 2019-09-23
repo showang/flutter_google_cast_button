@@ -1,7 +1,5 @@
 package github.showang.flutter_google_cast_button
 
-import android.annotation.SuppressLint
-import android.content.Context
 import androidx.annotation.StyleRes
 import androidx.mediarouter.app.MediaRouteChooserDialog
 import androidx.mediarouter.app.MediaRouteControllerDialog
@@ -15,38 +13,35 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-class FlutterGoogleCastButtonPlugin : MethodCallHandler {
+class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private val castStreamHandler: CastStreamHandler) : MethodCallHandler {
     companion object {
-        private const val TAG = "CastButtonPlugin"
-
-        @SuppressLint("StaticFieldLeak")
-        val instance = FlutterGoogleCastButtonPlugin()
         @StyleRes
         var customStyleResId: Int? = null
-        private val castStreamHandler = CastStreamHandler()
+        var instance: FlutterGoogleCastButtonPlugin? = null
+
         private val themeResId get() = customStyleResId ?: R.style.DefaultCastDialogTheme
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            CastContext.getSharedInstance(registrar.context().applicationContext)
+            val streamHandler = CastStreamHandler()
+            instance = FlutterGoogleCastButtonPlugin(registrar, streamHandler)
             MethodChannel(registrar.messenger(), "flutter_google_cast_button").apply {
                 setMethodCallHandler(instance)
             }
             EventChannel(registrar.messenger(), "cast_state_event").apply {
-                setStreamHandler(castStreamHandler)
+                setStreamHandler(streamHandler)
             }
         }
     }
 
-    private var currentContext: Context? = null
-
-    fun initContext(context: Context) {
-        currentContext = context
-        castStreamHandler.updateState()
+    init {
+        CastContext.getSharedInstance(registrar.activeContext())
     }
 
-    fun disposeContext() {
-        currentContext = null
+    private val castContext get() = CastContext.getSharedInstance(registrar.activeContext())
+
+    fun onResume() {
+        castStreamHandler.updateState()
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -57,13 +52,11 @@ class FlutterGoogleCastButtonPlugin : MethodCallHandler {
     }
 
     private fun showCastDialog() {
-        val context = currentContext ?: run { return }
-        val castContext = CastContext.getSharedInstance(context)
         castContext.sessionManager.currentCastSession?.let {
-            MediaRouteControllerDialog(currentContext, themeResId)
+            MediaRouteControllerDialog(registrar.activeContext(), themeResId)
                     .show()
         } ?: run {
-            MediaRouteChooserDialog(currentContext, themeResId).apply {
+            MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
                 routeSelector = castContext.mergedSelector
                 show()
             }
