@@ -11,7 +11,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   MediaRouteBloc mediaRouteBloc;
 
   @override
@@ -22,7 +21,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    mediaRouteBloc.dispose();
+//    mediaRouteBloc.dispose();
     mediaRouteBloc = null;
     super.dispose();
   }

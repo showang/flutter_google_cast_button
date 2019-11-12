@@ -15,11 +15,11 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
       (event) {
         _printD("MediaRouteBloc listen state changed: $event");
         if (event is int) {
-          dispatch(UpdateRouteStateEvent(event));
+          add(UpdateRouteStateEvent(event));
         }
       },
       onError: (e) {
-        dispatch(UpdateRouteStateEvent(1));
+        add(UpdateRouteStateEvent(1));
       },
     );
   }
@@ -54,17 +54,35 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
   }
 }
 
-class MediaRouteState extends Equatable {}
+class MediaRouteState extends Equatable {
+  @override
+  List<Object> get props => ['MediaRouteState'];
+}
 
-class NoDeviceAvailable extends MediaRouteState {}
+class NoDeviceAvailable extends MediaRouteState {
+  @override
+  List<Object> get props => ['NoDeviceAvailable'];
+}
 
-class Unconnected extends MediaRouteState {}
+class Unconnected extends MediaRouteState {
+  @override
+  List<Object> get props => ['Unconnected'];
+}
 
-class Connected extends MediaRouteState {}
+class Connected extends MediaRouteState {
+  @override
+  List<Object> get props => ['Connected'];
+}
 
-class Connecting extends MediaRouteState {}
+class Connecting extends MediaRouteState {
+  @override
+  List<Object> get props => ['Connecting'];
+}
 
-class MediaRouteEvent extends Equatable {}
+class MediaRouteEvent extends Equatable {
+  @override
+  List<Object> get props => ['MediaRouteEvent'];
+}
 
 class UpdateRouteStateEvent extends MediaRouteEvent {
   int nativeState;
@@ -72,4 +90,7 @@ class UpdateRouteStateEvent extends MediaRouteEvent {
   UpdateRouteStateEvent(int newState) {
     nativeState = newState;
   }
+
+  @override
+  List<Object> get props => ['UpdateRouteStateEvent ${nativeState}'];
 }
