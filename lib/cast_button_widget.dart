@@ -13,9 +13,7 @@ class CastButtonWidget extends StatefulWidget {
   CastButtonWidget({this.bloc, this.tintColor});
 
   @override
-  State<StatefulWidget> createState() {
-    return _CastButtonWidgetState();
-  }
+  State<StatefulWidget> createState() => _CastButtonWidgetState();
 }
 
 class _CastButtonWidgetState extends State<CastButtonWidget>
@@ -56,13 +54,11 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
     for (String path in connectingAssets) {
       Future(() async {
         final globalCache = PaintingBinding.instance.imageCache;
-        var image = ExactAssetImage(
-          path,
-          package: packageName,
-        );
+        var image = ExactAssetImage(path, package: packageName);
         var key = await image.obtainKey(
             createLocalImageConfiguration(context, size: Size(24, 24)));
-        globalCache.putIfAbsent(key, () => image.load(key),
+        final codec = PaintingBinding.instance.instantiateImageCodec;
+        globalCache.putIfAbsent(key, () => image.load(key, codec),
             onError: (e, s) => print("preload casting asset error"));
       });
     }
@@ -72,6 +68,7 @@ class _CastButtonWidgetState extends State<CastButtonWidget>
   @override
   void dispose() {
     _animationController.dispose();
+    _bloc.close();
     super.dispose();
   }
 
