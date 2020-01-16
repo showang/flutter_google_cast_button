@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    mediaRouteBloc.close();
     mediaRouteBloc = null;
     super.dispose();
   }
@@ -29,9 +30,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
+        appBar: AppBar(title: const Text('Plugin example app')),
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(bottom: kToolbarHeight),
