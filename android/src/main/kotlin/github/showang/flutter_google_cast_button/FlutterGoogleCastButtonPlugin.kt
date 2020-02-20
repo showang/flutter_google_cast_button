@@ -1,5 +1,6 @@
 package github.showang.flutter_google_cast_button
 
+import android.util.Log
 import androidx.annotation.StyleRes
 import androidx.mediarouter.app.MediaRouteChooserDialog
 import androidx.mediarouter.app.MediaRouteControllerDialog
@@ -32,10 +33,17 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
                 setStreamHandler(streamHandler)
             }
         }
+
     }
 
     init {
-        CastContext.getSharedInstance(registrar.activeContext())
+        // Please note that getting the shared instance may throw exceptions while
+        // the current device does not have Google Play service.
+        try {
+            CastContext.getSharedInstance(registrar.activeContext())
+        } catch (e: Exception) {
+            Log.v("Cast", "$e")
+        }
     }
 
     private val castContext get() = CastContext.getSharedInstance(registrar.activeContext())
@@ -54,7 +62,7 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
     private fun showCastDialog() {
         castContext.sessionManager.currentCastSession?.let {
             MediaRouteControllerDialog(registrar.activeContext(), themeResId)
-                    .show()
+                .show()
         } ?: run {
             MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
                 routeSelector = castContext.mergedSelector
