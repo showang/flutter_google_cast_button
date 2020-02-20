@@ -1,6 +1,5 @@
 package github.showang.flutter_google_cast_button
 
-import android.util.Log
 import androidx.annotation.StyleRes
 import androidx.mediarouter.app.MediaRouteChooserDialog
 import androidx.mediarouter.app.MediaRouteControllerDialog
@@ -13,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.lang.Exception
 
 class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private val castStreamHandler: CastStreamHandler) : MethodCallHandler {
     companion object {
@@ -33,20 +33,23 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
                 setStreamHandler(streamHandler)
             }
         }
-
     }
 
     init {
-        // Please note that getting the shared instance may throw exceptions while
-        // the current device does not have Google Play service.
+        // Note: it raises exceptions when the current device does not have Google Play service.
         try {
             CastContext.getSharedInstance(registrar.activeContext())
-        } catch (e: Exception) {
-            Log.v("Cast", "$e")
+        } catch (error: Exception) {
         }
     }
 
-    private val castContext get() = CastContext.getSharedInstance(registrar.activeContext())
+    private val castContext: CastContext?
+        // Note: it raises exceptions when the current device does not have Google Play service.
+        get() = try {
+            CastContext.getSharedInstance(registrar.activeContext())
+        } catch (error: Exception) {
+            null
+        }
 
     fun onResume() {
         castStreamHandler.updateState()
@@ -59,14 +62,17 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
         }
     }
 
+    // Shows the Chromecast dialog.
     private fun showCastDialog() {
-        castContext.sessionManager.currentCastSession?.let {
-            MediaRouteControllerDialog(registrar.activeContext(), themeResId)
-                .show()
-        } ?: run {
-            MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
-                routeSelector = castContext.mergedSelector
-                show()
+        castContext?.let {
+            it.sessionManager?.currentCastSession?.let {
+                MediaRouteControllerDialog(registrar.activeContext(), themeResId)
+                    .show()
+            } ?: run {
+                MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
+                    routeSelector = it.mergedSelector
+                    show()
+                }
             }
         }
     }
