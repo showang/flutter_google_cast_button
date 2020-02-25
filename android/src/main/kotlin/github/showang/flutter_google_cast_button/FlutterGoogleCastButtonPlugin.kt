@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.lang.Exception
 
 class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private val castStreamHandler: CastStreamHandler) : MethodCallHandler {
     companion object {
@@ -35,10 +36,20 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
     }
 
     init {
-        CastContext.getSharedInstance(registrar.activeContext())
+        // Note: it raises exceptions when the current device does not have Google Play service.
+        try {
+            CastContext.getSharedInstance(registrar.activeContext())
+        } catch (error: Exception) {
+        }
     }
 
-    private val castContext get() = CastContext.getSharedInstance(registrar.activeContext())
+    private val castContext: CastContext?
+        // Note: it raises exceptions when the current device does not have Google Play service.
+        get() = try {
+            CastContext.getSharedInstance(registrar.activeContext())
+        } catch (error: Exception) {
+            null
+        }
 
     fun onResume() {
         castStreamHandler.updateState()
@@ -51,14 +62,17 @@ class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private va
         }
     }
 
+    // Shows the Chromecast dialog.
     private fun showCastDialog() {
-        castContext.sessionManager.currentCastSession?.let {
-            MediaRouteControllerDialog(registrar.activeContext(), themeResId)
+        castContext?.let {
+            it.sessionManager?.currentCastSession?.let {
+                MediaRouteControllerDialog(registrar.activeContext(), themeResId)
                     .show()
-        } ?: run {
-            MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
-                routeSelector = castContext.mergedSelector
-                show()
+            } ?: run {
+                MediaRouteChooserDialog(registrar.activeContext(), themeResId).apply {
+                    routeSelector = it.mergedSelector
+                    show()
+                }
             }
         }
     }
